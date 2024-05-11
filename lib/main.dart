@@ -2,7 +2,6 @@
 
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -82,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const List<String> scopes = <String>[
       'email',
       'https://www.googleapis.com/auth/contacts.readonly',
+      'https://www.googleapis.com/auth/calendar.readonly',
     ];
 
     GoogleSignIn googleSignIn = GoogleSignIn(
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final result = await googleSignIn.signIn();
-      _openMainPage(result);
+      _openMainPage(result, googleSignIn);
     } catch (error) {
       setState(() {
         _label = '>>>$error';
@@ -98,8 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _openMainPage(GoogleSignInAccount? result) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => MainPage(result)));
+  void _openMainPage(GoogleSignInAccount? result, GoogleSignIn googleSignIn) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => MainPage(result, googleSignIn)));
   }
 }
