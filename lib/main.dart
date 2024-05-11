@@ -66,8 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
 
     GoogleSignIn googleSignIn = GoogleSignIn(
-      // Optional clientId
-      // clientId: '234509107532-bq7ttddccrur7rt1c6duubv0vsmsbine.apps.googleusercontent.com',
       scopes: scopes,
     );
 
