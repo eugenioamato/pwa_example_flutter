@@ -1,5 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -37,6 +40,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _label = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,14 +50,25 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: <Widget>[
-            SignInButton(
-              Buttons.google,
-              text: "Sign up with Google",
-              onPressed: _login,
-            )
+            Center(
+                child: Image.asset(
+              'assets/images/nurses.png',
+              fit: BoxFit.scaleDown,
+            )),
+            Center(
+              child: SizedBox(
+                width: min(MediaQuery.of(context).size.width, 400.0),
+                height: 80.0,
+                child: SignInButton(
+                  Buttons.google,
+                  text: "Sign up with Google",
+                  onPressed: _login,
+                ),
+              ),
+            ),
+            Text(_label),
           ],
         ),
       ),
@@ -60,6 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _login() async {
+    setState(() {
+      _label = '';
+    });
     const List<String> scopes = <String>[
       'email',
       'https://www.googleapis.com/auth/contacts.readonly',
@@ -71,10 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final result = await googleSignIn.signIn();
-      print('>>>$result');
       _openMainPage(result);
     } catch (error) {
-      print('>>>$error');
+      setState(() {
+        _label = '>>>$error';
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class MainPage extends StatefulWidget {
@@ -12,11 +12,17 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [
-        Text('Welcome ${widget.user?.displayName}'),
-      ],
-    ));
+    return Card(
+      child: Column(
+        children: [
+          Text('Welcome ${widget.user?.displayName}'),
+          if (widget.user?.photoUrl != null &&
+              (widget.user?.photoUrl ?? '').isNotEmpty)
+            CircleAvatar(
+              child: Image.network(widget.user!.photoUrl!),
+            ),
+        ],
+      ),
+    );
   }
 }

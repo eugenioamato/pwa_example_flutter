@@ -10,18 +10,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_sign_in: ^6.2.1
+  sign_in_button: ^3.2.0
 
   cupertino_icons: ^1.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  google_sign_in: ^6.2.1
-  sign_in_button: ^3.2.0
+
 
 
   flutter_lints: ^3.0.0
 
 flutter:
-
   uses-material-design: true
+  assets:
+    - assets/images/
