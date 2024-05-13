@@ -1,7 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -44,30 +40,40 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Stack(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Flex(
+          direction: Axis.vertical,
           children: <Widget>[
-            Center(
-                child: Image.asset(
-              'assets/images/nurses.png',
-              fit: BoxFit.scaleDown,
-            )),
-            Center(
-              child: SizedBox(
-                width: min(MediaQuery.of(context).size.width, 400.0),
-                height: 80.0,
-                child: SignInButton(
-                  Buttons.google,
-                  text: "Sign up with Google",
-                  onPressed: _login,
+            Expanded(
+              flex: 4,
+              child: Center(
+                  child: Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.scaleDown,
+              )),
+            ),
+            const Spacer(flex: 4,),
+            Expanded(
+              flex: 8,
+              child: Column(children: [
+              Center(child: Text('Hallo!',style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 40),),),
+              Center(child: Text('Log in op uw account!',style: Theme.of(context).textTheme.titleSmall,),),
+                const SizedBox(height: 40.0,),
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: SignInButton(
+                    Buttons.google,
+                    text: "Sign up with Google",
+                    onPressed: _login
+                  ),
                 ),
               ),
+              Text(_label),
+              ],),
             ),
-            Text(_label),
+            const Spacer(flex: 4,),
           ],
         ),
       ),

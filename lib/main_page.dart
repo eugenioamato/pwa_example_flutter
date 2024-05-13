@@ -58,7 +58,7 @@ class _MainPageState extends State<MainPage> {
             Card(
               child: Center(
                 child: GestureDetector(
-                  child: Text('logout'),
+                  child: const Text('logout'),
                   onTap: () => _logout(widget.googleSignIn),
                 ),
               ),
@@ -70,25 +70,20 @@ class _MainPageState extends State<MainPage> {
   }
 
   _loadCalendar(GoogleSignInAccount? user) async {
-    print('LOADING CCALENDAR FOR $user');
     if (user == null) return;
     final authResult = await user.authentication;
-    print('auth is $authResult');
     final String accessToken = authResult.accessToken ?? '';
-    print('accessToken is $accessToken');
     if (accessToken.isEmpty) return;
 
-    // Construct the GET request URL
     const String url =
         'https://www.googleapis.com/calendar/v3/users/me/calendarList';
 
-    // Set up headers with authorization
     final Map<String, String> headers = {
       'Authorization': 'Bearer $accessToken'
     };
 
     final response = await http.get(Uri.parse(url), headers: headers);
-    var mainCalendar;
+    Map<String, dynamic>? mainCalendar;
 
     if (response.statusCode == 200) {
       // Parse the JSON response
