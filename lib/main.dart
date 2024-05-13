@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
               flex: 4,
               child: Center(
                   child: Image.asset(
-                'assets/images/logo.png',
+                'images/logo.png',
                 fit: BoxFit.scaleDown,
               )),
             ),
