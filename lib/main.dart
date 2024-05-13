@@ -40,41 +40,74 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Flex(
-          direction: Axis.vertical,
-          children: <Widget>[
-            Expanded(
-              flex: 4,
-              child: Center(
-                  child: Image.asset(
-                'images/logo.png',
-                fit: BoxFit.scaleDown,
-              )),
-            ),
-            const Spacer(flex: 4,),
-            Expanded(
-              flex: 8,
-              child: Column(children: [
-              Center(child: Text('Hallo!',style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 40),),),
-              Center(child: Text('Log in op uw account!',style: Theme.of(context).textTheme.titleSmall,),),
-                const SizedBox(height: 40.0,),
-              Center(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: SignInButton(
-                    Buttons.google,
-                    text: "Sign up with Google",
-                    onPressed: _login
-                  ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 64),
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              const Spacer(),
+              Expanded(
+                flex: 2,
+                child: Flex(
+                  direction: Axis.vertical,
+                  children: <Widget>[
+                    Center(
+                        child: Container(
+                      constraints: const BoxConstraints.tightFor(width: 400),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                      ),
+                    )),
+                    const Spacer(
+                      flex: 1,
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Container(
+                        constraints: const BoxConstraints.tightFor(width: 240),
+                        child: ListView(
+                          children: [
+                            Center(
+                              child: Text(
+                                'Hallo!',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: 80),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                'Log in op uw account!',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                '',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
+                            Center(
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: SignInButton(Buttons.google,
+                                    text: "Sign up with Google",
+                                    onPressed: _login),
+                              ),
+                            ),
+                            Text(_label),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Text(_label),
-              ],),
-            ),
-            const Spacer(flex: 4,),
-          ],
+              const Spacer(),
+            ],
+          ),
         ),
       ),
     );

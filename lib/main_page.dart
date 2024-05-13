@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainPage extends StatefulWidget {
   final GoogleSignInAccount? user;
@@ -15,55 +17,88 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final SliverGridDelegateWithMaxCrossAxisExtent _gridDelegate =
+      const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCalendar(widget.user);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final name = widget.user?.displayName?.split(" ").first ?? '?';
+    String photoUrl = '';
+    if (widget.user?.photoUrl != null &&
+        (widget.user?.photoUrl ?? '').isNotEmpty) {
+      photoUrl = widget.user!.photoUrl!;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Dashboard'),
+        automaticallyImplyLeading: false,
+        leading: Image.network(photoUrl),
+        backgroundColor: Colors.brown.shade100.withOpacity(0.4),
+        title: Row(
+          children: [
+            Text(
+              'Goedemorgen, $name',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Image.asset('assets/images/Hand.png'),
+          ],
+        ),
+        actions: [
+          Center(
+            child: GestureDetector(
+              onTap: () => _logout(widget.googleSignIn),
+              child: const Text('  Logout  '),
+            ),
+          )
+        ],
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            Center(
-              child: Card(
-                child: Column(
-                  children: [
-                    Text('Welcome ${widget.user?.displayName}'),
-                    if (widget.user?.photoUrl != null &&
-                        (widget.user?.photoUrl ?? '').isNotEmpty)
-                      CircleAvatar(
-                        child: Image.network(widget.user!.photoUrl!),
+        child: Container(
+          color: Colors.orange.shade100.withOpacity(0.3),
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: GridView(
+              gridDelegate: _gridDelegate,
+              children: _events.map((e) {
+                String meetingPersonName = '?';
+                if (e['organizer'] != null && e['organizer'].isNotEmpty) {
+                  if (e['organizer']['displayName'] != null &&
+                      e['organizer']['displayName'].isNotEmpty) {
+                    meetingPersonName = e['organizer']['displayName'];
+                  } else {
+                    meetingPersonName = e['organizer']['email'];
+                  }
+                }
+                DateTime dateTime = DateTime.parse(e['start']['dateTime']);
+                var meetingUrl = '';
+                if (e['hangoutLink'] != null && e['hangoutLink'].isNotEmpty) {
+                  meetingUrl = e['hangoutLink'];
+                }
+
+                return GestureDetector(
+                  onTap: () => launchUrl(Uri.parse(meetingUrl)),
+                  child: Card(
+                    child: Center(
+                      child: Text(
+                        'Eerst volgende afspraak met $meetingPersonName at $dateTime',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: Colors.black),
+                        textAlign: TextAlign.center,
                       ),
-                    TextButton(
-                        onPressed: () => _loadCalendar(widget.user),
-                        child: const Text('LOAD CALENDAR')),
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            Column(
-              children: _events
-                  .map((e) => Card(
-                        child: Text(
-                          e,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Colors.black),
-                        ),
-                      ))
-                  .toList(),
-            ),
-            Card(
-              child: Center(
-                child: GestureDetector(
-                  child: const Text('logout'),
-                  onTap: () => _logout(widget.googleSignIn),
-                ),
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );
@@ -128,9 +163,20 @@ class _MainPageState extends State<MainPage> {
       // Parse the JSON response
       final Map<String, dynamic> data = jsonDecode(response.body);
       print('RESPONSE from LOADEVENTS:');
+      DateTime nextMeetingTime = DateTime.now().add(const Duration(days: 3650));
+
       for (final event in data['items']) {
-        print(event);
-        _events.add(event.toString());
+        print('>>> $event');
+        if (event['hangoutLink'] == null) continue;
+
+        print('has start ${event['start']}');
+        print('has starttime ${event['start']['dateTime']}');
+
+        DateTime eventTime = DateTime.parse(event['start']['dateTime']);
+        if (eventTime.isBefore(nextMeetingTime)) {
+          _events.clear();
+          _events.add(event);
+        }
       }
       setState(() {});
     } else {
@@ -140,7 +186,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  final List<String> _events = [];
+  final List<Map<String, dynamic>> _events = [];
 
   void _logout(GoogleSignIn googleSignIn) async {
     await googleSignIn.signOut();
